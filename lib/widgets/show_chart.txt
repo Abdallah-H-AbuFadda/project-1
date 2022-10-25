@@ -1,0 +1,77 @@
+import 'package:flutter/material.dart';
+
+import '../models/transaction.dart';
+import 'chart.dart';
+import 'transaction_list.dart';
+
+class ShowChart extends StatefulWidget {
+
+
+  @override
+  State<ShowChart> createState() => _ShowChartState();
+}
+
+class _ShowChartState extends State<ShowChart> {
+  bool _showChart = false;
+  final List<Transaction> listRecent;
+  final appBar;
+
+  _ShowChartState(this.listRecent,this.appBar)
+
+  @override
+  Widget build(BuildContext context) {
+
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final txListWidgetChart = Container(
+      height: (mediaQuery.size.height -
+          appBar.preferredSize.height -
+          mediaQuery.padding.top) *
+          0.7,
+      child: TransactionList(
+        _userTransactions,
+        _deleteTransaction,
+      ),
+    );
+
+    return Column(
+      children: [
+        if (isLandscape)
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text(
+              'Show Chart',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            Switch.adaptive(
+              activeColor: Theme.of(context).primaryColor,
+              value: _showChart,
+              onChanged: (val) {
+                setState(() {
+                  _showChart = val;
+                });
+              },
+            ),
+          ]),
+        if (!isLandscape)
+          Container(
+            height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+                0.3,
+            child: Chart(listRecent),
+          ),
+        if (!isLandscape) txListWidgetChart,
+        if (isLandscape)
+          _showChart
+              ? Container(
+            height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+                0.7,
+            child: Chart(listRecent),
+          )
+              : txListWidgetChart,
+      ],
+    );
+  }
+}
